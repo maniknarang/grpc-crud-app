@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	pb "github.com/project/proto"
@@ -12,52 +15,96 @@ import (
 
 // Change the host here only
 const (
-	address     = "localhost:27017"
-	defaultName = "Manik"
+	address = "localhost:27017"
 )
 
 func main() {
 	// Connect to the server
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Did not connect/dial: %v", err)
+		log.Fatalf("Did not connect to the server: %v", err)
 	}
 	defer conn.Close()
 	c := pb.NewCRUDClient(conn)
 
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
+	// This is a menu-based application
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	// Menu-based program allowing the user to choose from CRUD
+	fmt.Println("\nWelcome to a simple gRPC/MongoDB based app that performs CRUD",
+		" operations!")
+	fmt.Println("Enter the one of the folliwing choices below:")
+	fmt.Print("1 to create an item; 2 to read; 3 to update and 4 to remove: ")
 
-	// CreateItem operation
-	item, err := c.CreateItem(ctx, &pb.Employee{Name: name, Id: "1234"})
-	if err != nil {
-		log.Fatalf("Could not create a new item: %v", err)
+	choice := bufio.NewReader(os.Stdin)
+	text, _ := choice.ReadString('\n')
+
+	switch text {
+	case "1\n":
+		// CreateItem operation
+		// Read the name
+		fmt.Print("\nEnter the name: ")
+		name := bufio.NewReader(os.Stdin)
+		n, _ := name.ReadString('\n')
+		n = strings.Trim(n, "\n")
+
+		// Read the ID
+		fmt.Print("Enter the ID: ")
+		id := bufio.NewReader(os.Stdin)
+		i, _ := id.ReadString('\n')
+		i = strings.Trim(i, "\n")
+		item, err := c.CreateItem(ctx, &pb.Employee{Name: n, Id: i})
+		if err != nil {
+			log.Fatalf("Could not create a new item: %v", err)
+		}
+		fmt.Println("\nInserted", n, "with the ID", item.Id)
+
+	case "2\n":
+		// ReadItem operation
+		fmt.Print("\nEnter the ID: ")
+		id := bufio.NewReader(os.Stdin)
+		i, _ := id.ReadString('\n')
+		i = strings.Trim(i, "\n")
+		read, err := c.ReadItem(ctx, &pb.ID{Id: i})
+		if err != nil {
+			log.Fatalf("Error reading the item: %v", err)
+		}
+		fmt.Println("\nItem found:", read.Name, "with the ID", read.Id)
+
+	case "3\n":
+		// UpdateItem operation
+		// Read the name
+		fmt.Print("\nEnter the name you want to update: ")
+		name := bufio.NewReader(os.Stdin)
+		n, _ := name.ReadString('\n')
+		n = strings.Trim(n, "\n")
+
+		// Read the ID
+		fmt.Print("Enter the existing ID: ")
+		id := bufio.NewReader(os.Stdin)
+		i, _ := id.ReadString('\n')
+		i = strings.Trim(i, "\n")
+		up, err := c.UpdateItem(ctx, &pb.Employee{Name: n, Id: i})
+		if err != nil {
+			log.Fatalf("Error updating the item: %v", err)
+		}
+		log.Printf("\nItem updated with the ID: %s", up.Id)
+
+	case "4\n":
+		// DeleteItem operation
+		// Ignoring the error - should always be successful regardless of the
+		// implicit find result
+		// Read the ID
+		fmt.Print("\nEnter the existing ID: ")
+		id := bufio.NewReader(os.Stdin)
+		i, _ := id.ReadString('\n')
+		i = strings.Trim(i, "\n")
+		del, _ := c.DeleteItem(ctx, &pb.ID{Id: i})
+		log.Printf("\nItem with the ID %s deleted", del.Id)
+
+	default:
+		fmt.Println("\nWrong option!")
 	}
-	log.Printf("Name: %s", item.Id)
-
-	// ReadItem operation
-	read, err := c.ReadItem(ctx, &pb.ID{Id: "1234"})
-	if err != nil {
-		log.Fatalf("Error reading the item: %v", err)
-	}
-	log.Printf("Item found: %s", read.Name)
-
-	// UpdateItem operation
-	up, err := c.UpdateItem(ctx, &pb.Employee{Name: "LOL1", Id: "1234"})
-	if err != nil {
-		log.Fatalf("Error updating the item: %v", err)
-	}
-	log.Printf("Item updated with the ID: %s", up.Id)
-
-	// DeleteItem operation
-	// Ignoring the error - should always be successful regardless of the
-	// implicit find result
-	del, _ := c.DeleteItem(ctx, &pb.ID{Id: "1234"})
-	log.Printf("Item with the ID %s deleted", del.Id)
 }
