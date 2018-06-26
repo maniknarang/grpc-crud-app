@@ -46,15 +46,17 @@ func main() {
 }
 
 func (s *server) CreateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
-	return &pb.ID{Id: "1234"}, DB.Operation.Insert(em)
+	return &pb.ID{Id: em.Id}, DB.Operation.Insert(em)
 }
 
 func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) {
-	return &pb.Employee{}, DB.Operation.Find(bson.M{"id": "1234"}).One(&em)
+	return &pb.Employee{}, DB.Operation.Find(bson.M{"id": em.Id}).One(&em)
 }
 
 func (s *server) UpdateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
-	return &pb.ID{Id: em.Id}, DB.Operation.Update(bson.M{"$set": bson.M{"name": em.Name}}, bson.M{"id": em.Id})
+	find := bson.M{"id": em.Id}
+	update := bson.M{"$set": bson.M{"name": em.Name}}
+	return &pb.ID{Id: em.Id}, DB.Operation.Update(find, update)
 }
 
 func (s *server) DeleteItem(ctx context.Context, em *pb.ID) (*pb.ID, error) {
