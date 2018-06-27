@@ -55,6 +55,11 @@ func (s *server) CreateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error
 // ReadItem reads an item using the ID in the database
 // Returns the employee name and ID and error (if any)
 func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) {
+	// If ID is null, exit
+	if em.Id == "" {
+		log.Fatalf("Error: ID is empty")
+	}
+
 	var results []interface{}
 	e := DB.Operation.Find(bson.M{"id": em.Id}).All(&results)
 	if e != nil {
