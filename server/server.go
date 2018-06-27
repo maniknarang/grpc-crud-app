@@ -69,17 +69,38 @@ func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) 
 	if results == nil {
 		return nil, fmt.Errorf("ID not found")
 	}
+
+	// Convert []interface{} to []string for the field "Tags"
+	a := (results[0].(bson.M))["tags"].([]interface{})
+	b := make([]string, len(a))
+	for i := range a {
+		b[i] = a[i].(string)
+	}
+
+	// Convert map[interface{}]interface{} to map[string]string for the field "Metadata"
+	c := (results[0].(bson.M))["metadata"].(bson.M)
+	d := make(map[string]string)
+	for key, val := range c {
+		d[key] = val.(string)
+	}
+
 	return &pb.Employee{Name: (results[0].(bson.M))["name"].(string), Id: em.Id,
-			Category: int32((results[0].(bson.M))["category"].(int))},
+			Category: int32((results[0].(bson.M))["category"].(int)), Tags: b, Metadata: d},
 		DB.Operation.Find(bson.M{"id": em.Id}).One(&em)
 }
 
 // UpdateItem updates the item inside the database
 // Returns the updated data's ID and error (if any)
 func (s *server) UpdateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
+	// If ID is null, return specific error
+	if em.Id == "" {
+		return nil, fmt.Errorf("ID is empty, please try again")
+	}
+
 	find := bson.M{"id": em.Id}
-	updateName := bson.M{"$set": bson.M{"name": em.Name, "category": em.Category}}
-	return &pb.ID{Id: em.Id}, DB.Operation.Update(find, updateName)
+	update := bson.M{"$set": bson.M{"name": em.Name, "category": em.Category,
+		"tags": em.Tags, "metadata": em.Metadata}}
+	return &pb.ID{Id: em.Id}, DB.Operation.Update(find, update)
 }
 
 // DeleteItem deletes the item from the database
