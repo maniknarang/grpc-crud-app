@@ -13,6 +13,10 @@ service CRUD {
 message Employee {
     string name = 1;
     string id = 2;
+    int32 category = 3;
+    repeated string tags = 4;
+    map<string, string> metadata = 5;
+
 }
 
 message ID {
