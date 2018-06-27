@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -55,9 +56,9 @@ func (s *server) CreateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error
 // ReadItem reads an item using the ID in the database
 // Returns the employee name and ID and error (if any)
 func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) {
-	// If ID is null, exit
+	// If ID is null, return specific error
 	if em.Id == "" {
-		log.Fatalf("Error: ID is empty")
+		return nil, fmt.Errorf("ID is empty, please try again")
 	}
 
 	var results []interface{}
@@ -65,7 +66,11 @@ func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) 
 	if e != nil {
 		log.Fatalf("Would never reach here, to make the compiler happy: %v", e)
 	}
-	return &pb.Employee{Name: (results[0].(bson.M))["name"].(string), Id: em.Id},
+	if results == nil {
+		return nil, fmt.Errorf("ID not found")
+	}
+	return &pb.Employee{Name: (results[0].(bson.M))["name"].(string), Id: em.Id,
+			Category: int32((results[0].(bson.M))["category"].(int))},
 		DB.Operation.Find(bson.M{"id": em.Id}).One(&em)
 }
 
@@ -73,8 +78,8 @@ func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) 
 // Returns the updated data's ID and error (if any)
 func (s *server) UpdateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
 	find := bson.M{"id": em.Id}
-	update := bson.M{"$set": bson.M{"name": em.Name}}
-	return &pb.ID{Id: em.Id}, DB.Operation.Update(find, update)
+	updateName := bson.M{"$set": bson.M{"name": em.Name, "category": em.Category}}
+	return &pb.ID{Id: em.Id}, DB.Operation.Update(find, updateName)
 }
 
 // DeleteItem deletes the item from the database

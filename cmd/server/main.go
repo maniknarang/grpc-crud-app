@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -55,11 +56,21 @@ func main() {
 		id := bufio.NewReader(os.Stdin)
 		i, _ := id.ReadString('\n')
 		i = strings.Trim(i, "\n")
-		item, err := c.CreateItem(ctx, &pb.Employee{Name: n, Id: i})
+
+		// Read the category
+		fmt.Print("Enter the Category: ")
+		category := bufio.NewReader(os.Stdin)
+		cat, _ := category.ReadString('\n')
+		cat = strings.Trim(cat, "\n")
+		catInt, err := strconv.Atoi(cat)
+
+		// Populate the Employee struct
+		item, err := c.CreateItem(ctx, &pb.Employee{Name: n, Id: i,
+			Category: int32(catInt)})
 		if err != nil {
 			log.Fatalf("Could not create a new item: %v", err)
 		}
-		fmt.Println("\nInserted", n, "with the ID", item.Id)
+		fmt.Println("\nInserted", n, "with the ID", item.Id, "and category", catInt)
 
 	case "2\n":
 		// ReadItem operation
@@ -67,26 +78,38 @@ func main() {
 		id := bufio.NewReader(os.Stdin)
 		i, _ := id.ReadString('\n')
 		i = strings.Trim(i, "\n")
+
 		read, err := c.ReadItem(ctx, &pb.ID{Id: i})
 		if err != nil {
 			log.Fatalf("Error reading the item: %v", err)
 		}
-		fmt.Println("\nItem found:", read.Name, "with the ID", read.Id)
+		fmt.Println("\nItem found!")
+		fmt.Println("Name:", read.Name)
+		fmt.Println("ID:", read.Id)
+		fmt.Println("Category:", read.Category)
 
 	case "3\n":
 		// UpdateItem operation
+		// Read the ID
+		fmt.Print("\nEnter the existing ID: ")
+		id := bufio.NewReader(os.Stdin)
+		i, _ := id.ReadString('\n')
+		i = strings.Trim(i, "\n")
+
 		// Read the name
-		fmt.Print("\nEnter the name you want to update: ")
+		fmt.Print("Enter the new name: ")
 		name := bufio.NewReader(os.Stdin)
 		n, _ := name.ReadString('\n')
 		n = strings.Trim(n, "\n")
 
-		// Read the ID
-		fmt.Print("Enter the existing ID: ")
-		id := bufio.NewReader(os.Stdin)
-		i, _ := id.ReadString('\n')
-		i = strings.Trim(i, "\n")
-		up, err := c.UpdateItem(ctx, &pb.Employee{Name: n, Id: i})
+		// Read the category
+		fmt.Print("Enter the new category: ")
+		category := bufio.NewReader(os.Stdin)
+		cat, _ := category.ReadString('\n')
+		cat = strings.Trim(cat, "\n")
+		catInt, err := strconv.Atoi(cat)
+
+		up, err := c.UpdateItem(ctx, &pb.Employee{Name: n, Id: i, Category: int32(catInt)})
 		if err != nil {
 			log.Fatalf("Error updating the item: %v", err)
 		}
