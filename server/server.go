@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	pb "github.com/project/proto"
 	"golang.org/x/net/context"
@@ -52,7 +54,7 @@ func main() {
 func (s *server) CreateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
 	// If ID is null, return specific error
 	if em.Id == "" {
-		return nil, fmt.Errorf("ID is empty, please try again")
+		return nil, status.Error(codes.InvalidArgument, "ID is empty, please try again")
 	}
 
 	return &pb.ID{Id: em.Id}, DB.Operation.Insert(em)
@@ -63,7 +65,7 @@ func (s *server) CreateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error
 func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) {
 	// If ID is null, return specific error
 	if em.Id == "" {
-		return nil, fmt.Errorf("ID is empty, please try again")
+		return nil, status.Error(codes.InvalidArgument, "ID is empty, please try again")
 	}
 
 	var results []interface{}
@@ -72,7 +74,7 @@ func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) 
 		log.Fatalf("Would never reach here, to make the compiler happy: %v", e)
 	}
 	if results == nil {
-		return nil, fmt.Errorf("ID not found")
+		return nil, status.Error(codes.NotFound, "ID not found")
 	}
 
 	// Convert []interface{} to []string for the field "Tags"
@@ -99,13 +101,18 @@ func (s *server) ReadItem(ctx context.Context, em *pb.ID) (*pb.Employee, error) 
 func (s *server) UpdateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
 	// If ID is null, return specific error
 	if em.Id == "" {
-		return nil, fmt.Errorf("ID is empty, please try again")
+		return nil, status.Error(codes.InvalidArgument, "ID is empty, please try again")
 	}
 
 	find := bson.M{"id": em.Id}
 	update := bson.M{"$set": bson.M{"name": em.Name, "category": em.Category,
 		"tags": em.Tags, "metadata": em.Metadata}}
-	return &pb.ID{Id: em.Id}, DB.Operation.Update(find, update)
+	err := DB.Operation.Update(find, update)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	} else {
+		return &pb.ID{Id: em.Id}, nil
+	}
 }
 
 // DeleteItem deletes the item from the database
