@@ -4,7 +4,6 @@
 2. Using MongoDB <br />
 <b>OR</b><br />
 Via Docker's MongoDB image <br />
-3. (optional) Great tool to [view MongoDB database.](https://robomongo.org)
 
 ## Dependencies
 1. Install [Golang](https://golang.org/doc/install) and run: <br />
