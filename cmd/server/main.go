@@ -125,7 +125,11 @@ func main() {
 		i, _ := id.ReadString('\n')
 		i = strings.Trim(i, "\n")
 		del, _ := c.DeleteItem(ctx, &pb.ID{Id: i})
-		log.Printf("\nItem with the ID %s deleted", del.Id)
+		if del != nil {
+			log.Printf("\nItem with the ID %s deleted", del.Id)
+		} else {
+			log.Printf("Successful delete (even though ID didn't exist)")
+		}
 
 	default:
 		fmt.Println("\nWrong option!")
