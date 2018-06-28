@@ -42,4 +42,5 @@ Second terminal: <br />
 
 ## Test File
 ### Run the test file and see the database to check the changes:
+`$ go run server/server.go` <br />
 `$ go test tests/server_test.go`
