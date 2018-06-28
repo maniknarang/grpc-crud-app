@@ -7,7 +7,7 @@ Via Docker's MongoDB image <br />
 
 ## Dependencies
 Make sure you have [GOPATH](https://github.com/golang/go/wiki/GOPATH)
-environment variable set properly. <br /><br />
+environment variable set properly. <br />
 1. Install [Golang](https://golang.org/doc/install) and run: <br />
       `$ go get -u github.com/golang/protobuf/{proto,protoc-gen-go}` <br />
       `$ go get -u google.golang.org/grpc` <br />
