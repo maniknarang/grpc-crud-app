@@ -50,6 +50,11 @@ func main() {
 // CreateItem creates a new item in the database
 // Returns the inserted ID and error (if any)
 func (s *server) CreateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error) {
+	// If ID is null, return specific error
+	if em.Id == "" {
+		return nil, fmt.Errorf("ID is empty, please try again")
+	}
+
 	return &pb.ID{Id: em.Id}, DB.Operation.Insert(em)
 }
 
@@ -106,5 +111,5 @@ func (s *server) UpdateItem(ctx context.Context, em *pb.Employee) (*pb.ID, error
 // DeleteItem deletes the item from the database
 // Return the ID of the item deleted and error (if any)
 func (s *server) DeleteItem(ctx context.Context, em *pb.ID) (*pb.ID, error) {
-	return &pb.ID{Id: em.Id}, DB.Operation.Remove(bson.M{"id": em.Id})
+	return &pb.ID{Id: em.Id}, nil
 }

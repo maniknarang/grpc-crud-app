@@ -52,13 +52,10 @@ func Test_Integration_CreateItem_EmptyID(t *testing.T) {
 		Tags:     []string{"this", "is", "an", "array", "of", "strings"},
 		Metadata: map[string]string{"hello": "world"}})
 
-	// No error as insertion succeeds
-	assert.Nil(t, err)
-	// ID's should be equal as insertion succeeds
-	assert.Equal(t, a.Id, "", "Insertion should be fine, so they should",
-		"equal each other")
-	// ID's should not be equal here
-	assert.NotEqual(t, a.Id, "00000", "ID's are not equal")
+	// Error as insertion fails - ID is empty
+	assert.NotNil(t, err)
+	// a should be nil as insertion fails
+	assert.Nil(t, a)
 }
 
 // Test for CreateItem method when input is normal
