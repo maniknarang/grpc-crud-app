@@ -6,10 +6,13 @@
 Via Docker's MongoDB image <br />
 
 ## Dependencies
+Make sure you have [GOPATH](https://github.com/golang/go/wiki/GOPATH)
+environment variable set properly. <br /><br />
 1. Install [Golang](https://golang.org/doc/install) and run: <br />
       `$ go get -u github.com/golang/protobuf/{proto,protoc-gen-go}` <br />
       `$ go get -u google.golang.org/grpc` <br />
       `$ go get labix.org/v2/mgo` <br />
+      `$ go get golang.org/x/net/context` <br />
       
 2. Install [MongoDB](https://www.mongodb.com) and run the server: `$ mongod` <br />
 <b>OR</b><br />
