@@ -21,6 +21,7 @@ Install [Docker](https://www.docker.com) and run the following:
 
 ## Cloning the repository
 ### Clone the repository
+Clone the repository in `$GOPATH/src/github.com/` <br />
 `$ git clone https://github.com/maniknarang/gRPC-CRUD-App.git`
 
 ## Running the app
@@ -28,7 +29,7 @@ Make sure MongoDB server is up and running on `127.0.0.1:27017`. <br />
 
 ### If on Mac OS:
 `$ cd gRPC-CRUD-App` <br />
-`$ chmod 777 scripts/mac_script.sh` <br />
+`$ chmod 755 scripts/mac_script.sh` <br />
 `$ ./scripts/mac_script.sh` <br />
 Hit allow on the popup.
 
