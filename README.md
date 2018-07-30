@@ -1,47 +1,40 @@
 # A simple gRPC service in Golang
 ## Performs CRUD (Create, Read, Update and Delete) operations:
 1. In Golang
-2. Using MongoDB <br />
-<b>OR</b><br />
-Via Docker's MongoDB image <br />
+2. Using MongoDB  
+**OR**  
+Via Docker's MongoDB image  
 
 ## Dependencies
 Make sure you have [GOPATH](https://github.com/golang/go/wiki/GOPATH)
-environment variable set properly. <br />
-1. Install [Golang](https://golang.org/doc/install) and run: <br />
-      `$ go get -u github.com/golang/protobuf/{proto,protoc-gen-go}` <br />
-      `$ go get -u google.golang.org/grpc` <br />
-      `$ go get labix.org/v2/mgo` <br />
-      `$ go get golang.org/x/net/context` <br />
+environment variable set properly.  
+1. Install [Golang](https://golang.org/doc/install) and run:  
+      `go get -u github.com/golang/protobuf/{proto,protoc-gen-go}`  
+      `go get -u google.golang.org/grpc`  
+      `go get labix.org/v2/mgo`  
+      `go get golang.org/x/net/context`  
       
-2. Install [MongoDB](https://www.mongodb.com) and run the server: `$ mongod` <br />
-<b>OR</b><br />
+2. Install [MongoDB](https://www.mongodb.com) and run the server: `mongod`  
+**OR**  
 Install [Docker](https://www.docker.com) and run the following:
-`$ docker run -p 27017:27017 -d mongo`
+`docker run -p 27017:27017 -d mongo`
 
 ## Cloning the repository
 ### Clone the repository
-Clone the repository in `$GOPATH/src/github.com/` <br />
-`$ git clone https://github.com/maniknarang/gRPC-CRUD-App.git`
+`cd $HOME/src/github.com/`  
+`git clone https://github.com/maniknarang/gRPC-CRUD-App.git`
 
 ## Running the app
-Make sure MongoDB server is up and running on `127.0.0.1:27017`. <br />
+Make sure MongoDB server is up and running on `127.0.0.1:27017`.  
 
-### If on Mac OS:
-`$ cd gRPC-CRUD-App` <br />
-`$ chmod 755 scripts/mac_script.sh` <br />
-`$ ./scripts/mac_script.sh` <br />
-Hit allow on the popup.
-
-### If on Windows/Linux:
-Open two terminals and run: `$ cd gRPC-CRUD-App` on both of them. <br /><br />
-First terminal: <br />
-      `$ go run server/server.go` <br />
-      Hit allow on the popup. <br /><br />
-Second terminal: <br />
-      `$ go run cmd/server/main.go`
+Open two terminals and run: `cd $HOME/src/github.com/gRPC-CRUD-App` on both of them.    
+First terminal:  
+      `go run server/server.go`  
+      Hit allow on the popup.    
+Second terminal:  
+      `go run cmd/server/main.go`
 
 ## Test File
 ### Run the test file and see the database to check the changes:
-`$ go run server/server.go` <br />
-`$ go test tests/server_test.go`
+`go run server/server.go`  
+`go test tests/server_test.go`
