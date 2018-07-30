@@ -9,14 +9,14 @@ import (
 	"strings"
 	"time"
 
-	pb "github.com/project/proto"
+	pb "github.com/gRPC-CRUD-App/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
 // Change the host here only
 const (
-	address = "localhost:27017"
+	address = "127.0.0.1:50052"
 )
 
 func main() {
