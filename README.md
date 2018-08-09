@@ -20,7 +20,6 @@ Install [Docker](https://www.docker.com) and run the following:
 `docker run -p 27017:27017 -d mongo`
 
 ## Cloning the repository
-### Clone the repository
 `cd $HOME/src/github.com/`  
 `git clone https://github.com/maniknarang/gRPC-CRUD-App.git`
 
